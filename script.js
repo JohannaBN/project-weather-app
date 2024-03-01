@@ -9,6 +9,8 @@ const forecastWeather = document.getElementById("forecast-weather");
 const forecastTemperature = document.getElementById("forecast-temperature");
 const forecastContainer = document.getElementById("forecast-container");
 const errorContainer = document.getElementById("error-container");
+const weatherIcon = document.getElementById("icon").querySelector("img");
+const weatherText = document.getElementById("text").querySelector("h2");
 
 //Weather Today API
 //https://api.openweathermap.org/data/2.5/weather?q=Gagnef,Sweden&units=metric&APPID=YOUR_API_KEY
@@ -16,7 +18,7 @@ const errorContainer = document.getElementById("error-container");
 const BASE_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather";
 const API_KEY = "bf5fcdbe6629518d85ff1555a95c673f";
 // const API_KEY = "bf5fcdbe6629518d85ff1555a95c673"; // Use this to show error message
-const city = "Gagnef, Sweden";
+const city = "new mexico, mexico";
 
 //Creating the correct API URL for todays weather data
 const weatherTodayURL = `${BASE_WEATHER_URL}?q=${city}&units=metric&APPID=${API_KEY}`;
@@ -74,6 +76,41 @@ const fetchWeatherTodayAPI = () =>
       // Display an error message in case of error
       displayErrorMessage("Failed to fetch weather data.");
     });
+
+// Define the updateWeatherDisplay function
+const updateWeatherDisplay = (weatherCondition) => {
+  let iconUrl;
+  let text;
+
+  // Determine icon URL and text based on weather condition
+  if (weatherCondition === "Clouds") {
+    iconUrl = "./design/design2/icons/noun_Cloud_1188486.svg";
+    text = "Light a fire and get cosy. It's looking grey today.";
+  } else if (weatherCondition === "Clear") {
+    iconUrl = "./design/design2/icons/noun_Sunglasses_2055147.svg";
+    text = "Clear skies ahead. Enjoy the sunshine!";
+  } else if (weatherCondition === "Snow") {
+    iconUrl = "./design/design2/icons/noun_Snowflake_1188537.svg";
+    text = "Get your mittens ready. Snow is in the forecast.";
+  } else if (weatherCondition === "Rain") {
+    iconUrl = "./design/design2/icons/noun_Umbrella_2030530.svg";
+    text = "Don't forget your umbrella. Rain is on the way.";
+  } else if (weatherCondition === "Drizzle") {
+    iconUrl = "./design/design2/icons/noun_Drizzle_1188525.svg";
+    text = "A light drizzle is expected today. Stay dry!";
+  } else if (weatherCondition === "Thunderstorm") {
+    iconUrl = "./design/design2/icons/noun_Thunderstorm_1188495.svg";
+    text = "Thunder and lightning expected. Stay indoors!";
+  } else {
+    // Default icon and text if weather condition not recognized
+    iconUrl = "./design/design2/icons/default_icon.svg";
+    text = "Weather condition not available.";
+  }
+
+  // Update icon and text elements in the DOM
+  weatherIcon.src = iconUrl;
+  weatherText.textContent = text;
+};
 
 fetchWeatherTodayAPI();
 
