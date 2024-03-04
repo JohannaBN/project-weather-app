@@ -9,6 +9,7 @@ const forecastWeather = document.getElementById("forecast-weather");
 const forecastTemperature = document.getElementById("forecast-temperature");
 const forecastContainer = document.getElementById("forecast-container");
 const errorContainer = document.getElementById("error-container");
+const searchInput = document.getElementById("search-input");
 
 //Weather Today API
 //https://api.openweathermap.org/data/2.5/weather?q=Gagnef,Sweden&units=metric&APPID=YOUR_API_KEY
@@ -16,10 +17,18 @@ const errorContainer = document.getElementById("error-container");
 const BASE_WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather";
 const API_KEY = "bf5fcdbe6629518d85ff1555a95c673f";
 // const API_KEY = "bf5fcdbe6629518d85ff1555a95c673"; // Use this to show error message
-const city = "Gagnef, Sweden";
+let city = "Gagnef, Sweden";
 
 //Creating the correct API URL for todays weather data
-const weatherTodayURL = `${BASE_WEATHER_URL}?q=${city}&units=metric&APPID=${API_KEY}`;
+let weatherTodayURL = `${BASE_WEATHER_URL}?q=${city}&units=metric&APPID=${API_KEY}`;
+
+//Forecast API
+//https://api.openweathermap.org/data/2.5/forecast/?q=Gagnef,Sweden&units=metric&APPID=YOUR_API_KEY
+
+const BASE_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast/";
+
+//Creating the correct API URL for weather forecast
+let weatherForecastURL = `${BASE_FORECAST_URL}?q=${city}&units=metric&APPID=${API_KEY}`;
 
 // Error handling function
 const displayErrorMessage = (errorMessage) => {
@@ -75,16 +84,6 @@ const fetchWeatherTodayAPI = () =>
       displayErrorMessage("Failed to fetch weather data.");
     });
 
-fetchWeatherTodayAPI();
-
-//Forecast API
-//https://api.openweathermap.org/data/2.5/forecast/?q=Gagnef,Sweden&units=metric&APPID=YOUR_API_KEY
-
-const BASE_FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast/";
-
-//Creating the correct API URL for weather forecast
-const weatherForecastURL = `${BASE_FORECAST_URL}?q=${city}&units=metric&APPID=${API_KEY}`;
-
 //Fetch forecast data from API
 const fetchWeatherForecastAPI = () =>
   fetch(weatherForecastURL)
@@ -92,6 +91,9 @@ const fetchWeatherForecastAPI = () =>
       return response.json();
     })
     .then((weatherForecastData) => {
+      // Clear forecast container before appending new forecast data
+      forecastContainer.innerHTML = "";
+
       // Extracting dates and weather icons from the forecast data for 12:00:00 entries
       const filteredWeatherData = weatherForecastData.list
         .filter((item) => item.dt_txt.includes("12:00:00")) //Filter on 12:00:00 entries only
@@ -127,4 +129,30 @@ const fetchWeatherForecastAPI = () =>
       displayErrorMessage("Failed to fetch weather data.");
     });
 
+// Trying function for the search-bar
+const loadSearchResults = (event) => {
+  if (event.key === "Enter") {
+    const searchValue = searchInput.value.trim().toLowerCase();
+
+    if (searchValue) {
+      // Updating city with users input
+      city = searchValue;
+
+      // Update API URLs with the new city
+      weatherTodayURL = `${BASE_WEATHER_URL}?q=${city}&units=metric&APPID=${API_KEY}`;
+      weatherForecastURL = `${BASE_FORECAST_URL}?q=${city}&units=metric&APPID=${API_KEY}`;
+
+      fetchWeatherTodayAPI();
+      fetchWeatherForecastAPI();
+      searchInput.value = "";
+    } else {
+      alert("Please enter a city name.");
+    }
+  }
+};
+
+// Event listener searchinput
+searchInput.addEventListener("keypress", loadSearchResults);
+
+fetchWeatherTodayAPI();
 fetchWeatherForecastAPI();
